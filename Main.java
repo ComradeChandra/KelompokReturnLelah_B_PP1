@@ -3,25 +3,92 @@ package TubesPP1;
 import TubesPP1.BatchVertex;
 import TubesPP1.InventoryGraph;
 import TubesPP1.DateUtil;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-// Kelas Main adalah titik masuk aplikasi (tempat program dijalankan)
-// Di sini user bisa mengelola batch barang, menambah relasi, dan melakukan pencarian
+// Kelas Main adalah pintu masuk aplikasi. Semua interaksi user terjadi di sini.
 public class Main {
     public static void main(String[] args) {
+        // Membuat scanner untuk membaca input dari keyboard
         Scanner scanner = new Scanner(System.in);
+
+        // Membuat objek InventoryGraph untuk menyimpan semua batch barang
         InventoryGraph inventoryGraph = new InventoryGraph(20); // Maksimal 20 batch
 
-        // Tampilan awal aplikasi
-        System.out.println("✨ Selamat datang di Sistem Pencatatan Barang Kadaluarsa (Graph Based)! ✨");
-        System.out.println("Oleh: Aurellia Tri Putri - " + LocalDate.now().getYear());
+        // List untuk menyimpan semua user yang sudah terdaftar
+        List<User> users = new ArrayList<>();
+        // Variabel untuk menyimpan user yang sedang login
+        User currentUser = null;
 
-        // Perulangan menu utama
+        // Menu awal: user harus registrasi atau login dulu sebelum bisa pakai aplikasi
+        while (true) {
+            System.out.println("\n=== SISTEM SISTEM PENCATATAN BATCH BARANG KADALUARSA ===");
+            System.out.println("1. Registrasi");
+            System.out.println("2. Login");
+            System.out.println("0. Keluar");
+            System.out.print("Pilih menu: ");
+            String menu = scanner.nextLine();
+
+            if (menu.equals("1")) {
+                // Registrasi user baru
+                System.out.print("Masukkan username baru: ");
+                String username = scanner.nextLine();
+                System.out.print("Masukkan password: ");
+                String password = scanner.nextLine();
+
+                // Cek apakah username sudah dipakai user lain
+                boolean exists = false;
+                for (User u : users) {
+                    if (u.getUsername().equals(username)) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (exists) {
+                    System.out.println("Username sudah terdaftar. Silakan pilih username lain.");
+                } else {
+                    users.add(new User(username, password));
+                    System.out.println("Registrasi berhasil! Silakan login.");
+                }
+            } else if (menu.equals("2")) {
+                // Login user
+                System.out.print("Username: ");
+                String username = scanner.nextLine();
+                System.out.print("Password: ");
+                String password = scanner.nextLine();
+
+                boolean found = false;
+                for (User u : users) {
+                    if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
+                        currentUser = u;
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    System.out.println("Login berhasil! Selamat datang, " + currentUser.getUsername() + ".");
+                    break; // Lanjut ke menu utama
+                } else {
+                    System.out.println("Username atau password salah.");
+                }
+            } else if (menu.equals("0")) {
+                // Keluar aplikasi
+                System.out.println("Keluar aplikasi.");
+                scanner.close();
+                return;
+            } else {
+                System.out.println("Pilihan tidak valid.");
+            }
+        }
+
+        // Setelah login, tampilkan menu utama aplikasi
+        System.out.println("Selamat datang di Sistem Pencatatan Batch Barang Kadaluarsa (Graph Based)!");
+
+        // Menu utama aplikasi, user bisa mengelola batch barang
         while (true) {
             System.out.println("\n--- Menu Utama ---");
             System.out.println("1. Tambah Batch Barang Baru");
@@ -32,29 +99,30 @@ public class Main {
             System.out.println("6. Tampilkan Semua Batch");
             System.out.println("7. Lacak Alur/Dependensi Batch (BFS)");
             System.out.println("8. Lacak Alur/Dependensi Batch (DFS)");
+            System.out.println("9. Logout");
             System.out.println("0. Keluar Aplikasi");
-            System.out.print("➡️ Pilihan Anda: ");
+            System.out.print("Pilihan Anda: ");
 
             int choice = -1;
             try {
                 choice = scanner.nextInt();
             } catch (InputMismatchException e) {
-                System.out.println("❌ Input tidak valid. Mohon masukkan angka.");
+                System.out.println("Input tidak valid. Mohon masukkan angka.");
                 scanner.nextLine(); // Buang input yang salah
                 continue;
             }
             scanner.nextLine(); // Buang newline setelah angka
 
             switch (choice) {
-                case 1: // Tambah Batch Barang
-                    // Input data batch baru dari user
+                case 1:
+                    // Tambah batch barang baru ke sistem
                     System.out.println("\n--- Tambah Batch Barang ---");
                     System.out.print("   ID Batch (misal: B001): ");
                     String batchId = scanner.nextLine();
                     System.out.print("   Nama Produk: ");
                     String productName = scanner.nextLine();
 
-                    // Input tanggal produksi
+                    // Input tanggal produksi, dicek agar formatnya benar
                     LocalDate productionDate = null;
                     while (productionDate == null) {
                         System.out.print("   Tanggal Produksi (YYYY-MM-DD): ");
@@ -62,11 +130,11 @@ public class Main {
                         try {
                             productionDate = DateUtil.parseDate(prodDateStr);
                         } catch (DateTimeParseException e) {
-                            System.out.println("❌ Format tanggal salah. Gunakan YYYY-MM-DD.");
+                            System.out.println("Format tanggal salah. Gunakan YYYY-MM-DD.");
                         }
                     }
 
-                    // Input tanggal kadaluarsa
+                    // Input tanggal kadaluarsa, harus setelah tanggal produksi
                     LocalDate expiryDate = null;
                     while (expiryDate == null) {
                         System.out.print("   Tanggal Kadaluarsa (YYYY-MM-DD): ");
@@ -74,15 +142,15 @@ public class Main {
                         try {
                             expiryDate = DateUtil.parseDate(expiryDateStr);
                             if (expiryDate.isBefore(productionDate)) {
-                                System.out.println("❌ Tanggal kadaluarsa tidak boleh sebelum tanggal produksi.");
+                                System.out.println("Tanggal kadaluarsa tidak boleh sebelum tanggal produksi.");
                                 expiryDate = null;
                             }
                         } catch (DateTimeParseException e) {
-                            System.out.println("❌ Format tanggal salah. Gunakan YYYY-MM-DD.");
+                            System.out.println("Format tanggal salah. Gunakan YYYY-MM-DD.");
                         }
                     }
 
-                    // Input jumlah barang
+                    // Input jumlah barang, harus angka positif
                     int quantity = 0;
                     boolean validQuantity = false;
                     while (!validQuantity) {
@@ -90,12 +158,12 @@ public class Main {
                         try {
                             quantity = scanner.nextInt();
                             if (quantity <= 0) {
-                                System.out.println("❌ Kuantitas harus lebih dari 0.");
+                                System.out.println("Kuantitas harus lebih dari 0.");
                             } else {
                                 validQuantity = true;
                             }
                         } catch (InputMismatchException e) {
-                            System.out.println("❌ Kuantitas harus berupa angka.");
+                            System.out.println("Kuantitas harus berupa angka.");
                             scanner.nextLine(); // Buang input salah
                         }
                     }
@@ -106,8 +174,8 @@ public class Main {
                     inventoryGraph.addBatchVertex(newBatch);
                     break;
 
-                case 2: // Tambah Hubungan Antar Batch
-                    // Input ID batch asal dan tujuan, lalu buat edge di graph
+                case 2:
+                    // Tambah hubungan antar batch (edge)
                     System.out.println("\n--- Tambah Hubungan Antar Batch ---");
                     System.out.print("   ID Batch Asal (misal: B001): ");
                     String sourceBatchId = scanner.nextLine();
@@ -116,13 +184,13 @@ public class Main {
                     inventoryGraph.addBatchEdge(sourceBatchId, destBatchId);
                     break;
 
-                case 3: // Tampilkan Adjacency Matrix
-                    // Menampilkan tabel relasi antar batch
+                case 3:
+                    // Tampilkan adjacency matrix (tabel relasi antar batch)
                     inventoryGraph.displayAdjacencyMatrix();
                     break;
 
-                case 4: // Cari Batch Mendekati Kadaluarsa
-                    // User memasukkan berapa hari ke depan, lalu tampilkan batch yang akan kadaluarsa
+                case 4:
+                    // Cari batch yang akan kadaluarsa dalam x hari ke depan
                     int daysThreshold = 0;
                     boolean validDays = false;
                     while (!validDays) {
@@ -130,20 +198,21 @@ public class Main {
                         try {
                             daysThreshold = scanner.nextInt();
                             if (daysThreshold < 0) {
-                                System.out.println("❌ Jumlah hari tidak boleh negatif.");
+                                System.out.println("Jumlah hari tidak boleh negatif.");
                             } else {
                                 validDays = true;
                             }
                         } catch (InputMismatchException e) {
-                            System.out.println("❌ Input tidak valid. Mohon masukkan angka.");
+                            System.out.println("Input tidak valid. Mohon masukkan angka.");
                             scanner.nextLine(); // Buang input salah
                         }
                     }
                     scanner.nextLine(); // Buang newline
 
+                    // Tampilkan batch yang akan kadaluarsa
                     List<BatchVertex> expiringBatches = inventoryGraph.findExpiringBatches(daysThreshold);
                     if (expiringBatches.isEmpty()) {
-                        System.out.println("🎉 Tidak ada batch yang mendekati kadaluarsa dalam periode tersebut.");
+                        System.out.println("Tidak ada batch yang mendekati kadaluarsa dalam periode tersebut.");
                     } else {
                         System.out.println("\n--- Batch yang Akan Kadaluarsa (Dalam " + daysThreshold + " Hari) ---");
                         for (BatchVertex batch : expiringBatches) {
@@ -152,11 +221,11 @@ public class Main {
                     }
                     break;
 
-                case 5: // Cari Batch yang Sudah Kadaluarsa
-                    // Menampilkan batch yang sudah kadaluarsa
+                case 5:
+                    // Cari batch yang sudah kadaluarsa
                     List<BatchVertex> expiredBatches = inventoryGraph.findExpiredBatches();
                     if (expiredBatches.isEmpty()) {
-                        System.out.println("🎉 Tidak ada batch yang sudah kadaluarsa.");
+                        System.out.println("Tidak ada batch yang sudah kadaluarsa.");
                     } else {
                         System.out.println("\n--- Batch yang Sudah Kadaluarsa ---");
                         for (BatchVertex batch : expiredBatches) {
@@ -165,33 +234,39 @@ public class Main {
                     }
                     break;
 
-                case 6: // Tampilkan Semua Batch
-                    // Menampilkan semua batch yang ada di sistem
+                case 6:
+                    // Tampilkan semua batch yang ada di sistem
                     inventoryGraph.displayAllBatches();
                     break;
 
-                case 7: // Lacak Alur/Dependensi Batch (BFS)
-                    // User memasukkan ID batch awal, lalu sistem menelusuri batch lain yang terhubung (BFS)
+                case 7:
+                    // Lacak alur batch (BFS)
                     System.out.print("   Masukkan ID Batch Awal untuk pelacakan BFS: ");
                     String startBatchBfs = scanner.nextLine();
                     inventoryGraph.bfs(startBatchBfs);
                     break;
 
-                case 8: // Lacak Alur/Dependensi Batch (DFS)
-                    // User memasukkan ID batch awal, lalu sistem menelusuri batch lain yang terhubung (DFS)
+                case 8:
+                    // Lacak alur batch (DFS)
                     System.out.print("   Masukkan ID Batch Awal untuk pelacakan DFS: ");
                     String startBatchDfs = scanner.nextLine();
                     inventoryGraph.dfs(startBatchDfs);
                     break;
 
-                case 0: // Keluar Aplikasi
-                    // Menutup aplikasi
-                    System.out.println("👋 Terima kasih telah menggunakan Sistem Pencatatan Barang Kadaluarsa! Sampai jumpa lagi! (づ￣ ³￣)づ");
+                case 9:
+                    // Logout, kembali ke menu login/registrasi
+                    System.out.println("Anda telah logout.");
+                    main(args); // Restart aplikasi dari awal
+                    return;
+
+                case 0:
+                    // Keluar aplikasi
+                    System.out.println("Terima kasih telah menggunakan Sistem Pencatatan Barang Kadaluarsa! Sampai jumpa lagi.");
                     scanner.close();
                     return;
 
                 default:
-                    System.out.println("🤔 Pilihan tidak valid. Silakan coba lagi.");
+                    System.out.println("Pilihan tidak valid. Silakan coba lagi.");
             }
         }
     }

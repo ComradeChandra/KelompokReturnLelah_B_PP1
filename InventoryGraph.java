@@ -42,9 +42,9 @@ public class InventoryGraph {
             vertices.add(vertex);
             vertexIndices.put(vertex.batchId, numVertices);
             numVertices++;
-            System.out.println("✅ Batch '" + vertex.batchId + "' (" + vertex.productName + ") berhasil ditambahkan.");
+            System.out.println("Batch '" + vertex.batchId + "' (" + vertex.productName + ") berhasil ditambahkan.");
         } else {
-            System.out.println("⚠️ Batch dengan ID '" + vertex.batchId + "' sudah ada.");
+            System.out.println("Batch dengan ID '" + vertex.batchId + "' sudah ada.");
         }
     }
 
@@ -55,13 +55,13 @@ public class InventoryGraph {
 
         if (index1 != null && index2 != null) {
             if (adjMatrix[index1][index2] == 1) {
-                System.out.println("⚠️ Edge antara '" + batchId1 + "' dan '" + batchId2 + "' sudah ada.");
+                System.out.println("Edge antara '" + batchId1 + "' dan '" + batchId2 + "' sudah ada.");
                 return;
             }
             adjMatrix[index1][index2] = 1;
-            System.out.println("🔗 Edge ditambahkan dari Batch '" + batchId1 + "' ke Batch '" + batchId2 + "'.");
+            System.out.println("Edge ditambahkan dari Batch '" + batchId1 + "' ke Batch '" + batchId2 + "'.");
         } else {
-            System.out.println("❌ Salah satu atau kedua Batch ID tidak ditemukan. Pastikan Batch sudah ditambahkan.");
+            System.out.println("Salah satu atau kedua Batch ID tidak ditemukan. Pastikan Batch sudah ditambahkan.");
         }
     }
 
@@ -108,7 +108,7 @@ public class InventoryGraph {
     // Mencari batch yang akan kadaluarsa dalam x hari ke depan
     public List<BatchVertex> findExpiringBatches(int daysThreshold) {
         List<BatchVertex> expiring = new ArrayList<>();
-        System.out.println("\n🔍 Mencari batch yang akan kadaluarsa dalam " + daysThreshold + " hari...");
+        System.out.println("\nMencari batch yang akan kadaluarsa dalam " + daysThreshold + " hari...");
         for (BatchVertex batch : vertices) {
             if (batch.isExpiringSoon(daysThreshold)) {
                 batch.updateStatus("Akan Kadaluarsa");
@@ -121,7 +121,7 @@ public class InventoryGraph {
     // Mencari batch yang sudah kadaluarsa
     public List<BatchVertex> findExpiredBatches() {
         List<BatchVertex> expired = new ArrayList<>();
-        System.out.println("\n🔍 Mencari batch yang sudah kadaluarsa...");
+        System.out.println("\nMencari batch yang sudah kadaluarsa...");
         for (BatchVertex batch : vertices) {
             if (batch.isExpired()) {
                 batch.updateStatus("Kadaluarsa");
@@ -155,7 +155,7 @@ public class InventoryGraph {
 
         BatchVertex startVertex = getBatchVertex(startBatchId);
         if (startVertex == null) {
-            System.out.println("❌ Batch '" + startBatchId + "' tidak ditemukan untuk memulai traversal.");
+            System.out.println("Batch '" + startBatchId + "' tidak ditemukan untuk memulai traversal.");
             return traversalResult;
         }
 
@@ -189,7 +189,7 @@ public class InventoryGraph {
         List<BatchVertex> traversalResult = new ArrayList<>();
         BatchVertex startVertex = getBatchVertex(startBatchId);
         if (startVertex == null) {
-            System.out.println("❌ Batch '" + startBatchId + "' tidak ditemukan untuk memulai traversal.");
+            System.out.println("Batch '" + startBatchId + "' tidak ditemukan untuk memulai traversal.");
             return traversalResult;
         }
         System.out.println("\n--- Melacak Alur/Dependensi Batch dari: " + startBatchId + " (DFS) ---");
