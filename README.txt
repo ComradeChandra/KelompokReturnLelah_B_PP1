@@ -38,6 +38,11 @@ Fitur Utama
    Semua fitur diakses lewat menu di terminal/command prompt.
    Input mudah, tinggal ketik angka sesuai menu.
 
+9. Registrasi, Login, dan Penyimpanan User
+   Setiap user harus registrasi dan login sebelum menggunakan aplikasi.  
+   Data user (username dan password hash) disimpan otomatis ke file `users.txt`.  
+   Saat aplikasi dijalankan ulang, user yang sudah terdaftar bisa langsung login tanpa registrasi ulang.
+
 ---
 
 Cara Kerja Singkat
@@ -46,6 +51,9 @@ Cara Kerja Singkat
 - Hubungan antar batch (misal: batch A diproses jadi batch B) dicatat sebagai edge di graph.
 - Tanggal kadaluarsa dipantau otomatis, status batch akan berubah jika sudah/hampir kadaluarsa.
 - Pencarian batch yang kadaluarsa atau tracing hubungan batch dilakukan dengan algoritma graph (BFS/DFS).
+- **Data user disimpan di file `users.txt`** dengan format:  
+  `username;hash_password`  
+  Password tidak disimpan dalam bentuk asli, tapi di-hash agar lebih aman.
 
 ---
 
@@ -74,6 +82,12 @@ File Penting
 - DateUtil.java  
   Kelas bantu untuk parsing dan format tanggal.
 
+- User.java  
+  Kelas untuk menyimpan data user, termasuk hashing password.
+
+- users.txt  
+  File untuk menyimpan data user yang sudah registrasi (username dan hash password).
+
 ---
 
 Kenapa Pakai Graph?
@@ -85,6 +99,6 @@ Kenapa Pakai Graph?
 
 Catatan
 
-- Semua data hanya disimpan selama program berjalan (belum ada penyimpanan ke file).
-- Program ini untuk latihan dan pembelajaran, bukan untuk produksi skala besar.
+- Data user akan tetap ada walaupun aplikasi ditutup, karena disimpan di file `users.txt`.
+
 

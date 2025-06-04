@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import java.io.*;
 
-// Kelas Main adalah pintu masuk aplikasi. Semua interaksi user terjadi di sini.
 public class Main {
     public static void main(String[] args) {
         // Membuat scanner untuk membaca input dari keyboard
@@ -23,6 +23,9 @@ public class Main {
         List<User> users = new ArrayList<>();
         // Variabel untuk menyimpan user yang sedang login
         User currentUser = null;
+
+        // Membaca user dari file users.txt
+        users = loadUsersFromFile("users.txt");
 
         // Menu awal: user harus registrasi atau login dulu sebelum bisa pakai aplikasi
         while (true) {
@@ -63,7 +66,7 @@ public class Main {
 
                 boolean found = false;
                 for (User u : users) {
-                    if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
+                    if (u.getUsername().equals(username) && u.checkPassword(password)) {
                         currentUser = u;
                         found = true;
                         break;
@@ -262,12 +265,43 @@ public class Main {
                 case 0:
                     // Keluar aplikasi
                     System.out.println("Terima kasih telah menggunakan Sistem Pencatatan Barang Kadaluarsa! Sampai jumpa lagi.");
+                    // Simpan user ke file sebelum keluar
+                    saveUsersToFile(users, "users.txt");
                     scanner.close();
                     return;
 
                 default:
                     System.out.println("Pilihan tidak valid. Silakan coba lagi.");
             }
+        }
+    }
+
+    // Membaca user dari file users.txt
+    public static List<User> loadUsersFromFile(String filename) {
+        List<User> users = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (parts.length == 2) {
+                    users.add(new User(parts[0], parts[1], true)); // true artinya password sudah hash
+                }
+            }
+        } catch (IOException e) {
+            // File belum ada, tidak masalah
+        }
+        return users;
+    }
+
+    // Menyimpan user ke file users.txt
+    public static void saveUsersToFile(List<User> users, String filename) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+            for (User u : users) {
+                bw.write(u.getUsername() + ";" + u.getPasswordHash());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Gagal menyimpan data user ke file.");
         }
     }
 }
