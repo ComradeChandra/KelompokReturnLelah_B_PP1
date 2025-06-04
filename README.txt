@@ -8,13 +8,6 @@ Aplikasi ini juga bisa menampilkan hubungan antar batch (misal: batch yang salin
 
 ---
 
-Untuk Siapa?
-
-- Untuk mahasiswa, dosen, atau siapa saja yang ingin belajar struktur data graph lewat studi kasus nyata.
-- Untuk pengelola gudang yang ingin tahu barang mana yang harus segera dikeluarkan sebelum kadaluarsa.
-- Untuk yang ingin tahu alur atau dependensi antar batch (misal: batch A harus diproses sebelum batch B).
-
----
 
 Fitur Utama
 
