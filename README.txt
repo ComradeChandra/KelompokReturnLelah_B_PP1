@@ -95,7 +95,3 @@ Catatan
 - Semua data hanya disimpan selama program berjalan (belum ada penyimpanan ke file).
 - Program ini untuk latihan dan pembelajaran, bukan untuk produksi skala besar.
 
----
-
-Selamat mencoba! Jika ada error atau ingin dikembangkan lagi, silakan modifikasi sesuai kebutuhan.
-
