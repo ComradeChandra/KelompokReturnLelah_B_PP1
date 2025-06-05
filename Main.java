@@ -55,6 +55,7 @@ public class Main {
                     System.out.println("Username sudah terdaftar. Silakan pilih username lain.");
                 } else {
                     users.add(new User(username, password));
+                    saveUsersToFile(users, "users.txt"); //  baris ini berfungsi agar user langsung disimpan ke file
                     System.out.println("Registrasi berhasil! Silakan login.");
                 }
             } else if (menu.equals("2")) {
@@ -102,7 +103,9 @@ public class Main {
             System.out.println("6. Tampilkan Semua Batch");
             System.out.println("7. Lacak Alur/Dependensi Batch (BFS)");
             System.out.println("8. Lacak Alur/Dependensi Batch (DFS)");
-            System.out.println("9. Logout");
+            System.out.println("9. Edit Batch");
+            System.out.println("10. Hapus Batch");
+            System.out.println("11. Logout");
             System.out.println("0. Keluar Aplikasi");
             System.out.print("Pilihan Anda: ");
 
@@ -257,6 +260,46 @@ public class Main {
                     break;
 
                 case 9:
+                    // Edit batch
+                    System.out.print("Masukkan ID Batch yang ingin diedit: ");
+                    String editId = scanner.nextLine();
+                    BatchVertex batchToEdit = inventoryGraph.getBatchVertex(editId);
+                    if (batchToEdit == null) {
+                        System.out.println("Batch tidak ditemukan.");
+                    } else {
+                        System.out.print("Nama Produk baru (kosongkan jika tidak diubah): ");
+                        String newName = scanner.nextLine();
+                        if (!newName.isEmpty()) batchToEdit.productName = newName;
+
+                        System.out.print("Tanggal Produksi baru (YYYY-MM-DD, kosongkan jika tidak diubah): ");
+                        String newProd = scanner.nextLine();
+                        if (!newProd.isEmpty()) batchToEdit.productionDate = DateUtil.parseDate(newProd);
+
+                        System.out.print("Tanggal Kadaluarsa baru (YYYY-MM-DD, kosongkan jika tidak diubah): ");
+                        String newExp = scanner.nextLine();
+                        if (!newExp.isEmpty()) batchToEdit.expiryDate = DateUtil.parseDate(newExp);
+
+                        System.out.print("Kuantitas baru (kosongkan jika tidak diubah): ");
+                        String newQty = scanner.nextLine();
+                        if (!newQty.isEmpty()) batchToEdit.quantity = Integer.parseInt(newQty);
+
+                        System.out.println("Batch berhasil diedit.");
+                    }
+                    break;
+
+                case 10:
+                    // Hapus batch
+                    System.out.print("Masukkan ID Batch yang ingin dihapus: ");
+                    String delId = scanner.nextLine();
+                    boolean removed = inventoryGraph.removeBatchVertex(delId);
+                    if (removed) {
+                        System.out.println("Batch berhasil dihapus.");
+                    } else {
+                        System.out.println("Batch tidak ditemukan.");
+                    }
+                    break;
+
+                case 11:
                     // Logout, kembali ke menu login/registrasi
                     System.out.println("Anda telah logout.");
                     main(args); // Restart aplikasi dari awal
@@ -267,6 +310,8 @@ public class Main {
                     System.out.println("Terima kasih telah menggunakan Sistem Pencatatan Barang Kadaluarsa! Sampai jumpa lagi.");
                     // Simpan user ke file sebelum keluar
                     saveUsersToFile(users, "users.txt");
+                    // Simpan semua batch ke file
+                    saveBatchesToFile(inventoryGraph.getAllBatches(), "batches.txt");
                     scanner.close();
                     return;
 
@@ -303,5 +348,47 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Gagal menyimpan data user ke file.");
         }
+    }
+
+    // Simpan semua batch ke file
+    public static void saveBatchesToFile(List<BatchVertex> batches, String filename) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+            for (BatchVertex b : batches) {
+                bw.write(b.getBatchId() + ";" +
+                         b.getProductName() + ";" +
+                         DateUtil.formatDate(b.getProductionDate()) + ";" +
+                         DateUtil.formatDate(b.getExpiryDate()) + ";" +
+                         b.getQuantity() + ";" +
+                         b.getStatus());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Gagal menyimpan data batch ke file.");
+        }
+    }
+
+    // Load semua batch dari file
+    public static List<BatchVertex> loadBatchesFromFile(String filename) {
+        List<BatchVertex> batches = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (parts.length >= 6) {
+                    BatchVertex b = new BatchVertex(
+                        parts[0],
+                        parts[1],
+                        DateUtil.parseDate(parts[2]),
+                        DateUtil.parseDate(parts[3]),
+                        Integer.parseInt(parts[4])
+                    );
+                    b.updateStatus(parts[5]);
+                    batches.add(b);
+                }
+            }
+        } catch (IOException e) {
+            // File belum ada, tidak masalah
+        }
+        return batches;
     }
 }

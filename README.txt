@@ -34,14 +34,21 @@ Fitur Utama
    Bisa menelusuri hubungan antar batch secara berurutan (BFS) atau menyelam ke dalam (DFS).
    Cocok untuk melihat urutan proses atau tracing batch.
 
-8. Antarmuka Menu Sederhana  
-   Semua fitur diakses lewat menu di terminal/command prompt.
-   Input mudah, tinggal ketik angka sesuai menu.
+8. Edit dan Hapus Batch  
+   Sekarang user bisa mengedit data batch (nama produk, tanggal, jumlah) atau menghapus batch dari sistem.
 
-9. Registrasi, Login, dan Penyimpanan User
-   Setiap user harus registrasi dan login sebelum menggunakan aplikasi.  
-   Data user (username dan password hash) disimpan otomatis ke file `users.txt`.  
-   Saat aplikasi dijalankan ulang, user yang sudah terdaftar bisa langsung login tanpa registrasi ulang.
+9. Penyimpanan Data Batch ke File  
+   Semua data batch akan disimpan otomatis ke file `batches.txt`.  
+   Data batch tetap ada walaupun aplikasi ditutup dan akan dimuat ulang saat aplikasi dijalankan kembali.
+
+10. Antarmuka Menu Sederhana  
+    Semua fitur diakses lewat menu di terminal/command prompt.
+    Input mudah, tinggal ketik angka sesuai menu.
+
+11. Registrasi, Login, dan Penyimpanan User  
+    Setiap user harus registrasi dan login sebelum menggunakan aplikasi.  
+    Data user (username dan password hash) disimpan otomatis ke file `users.txt`.  
+    Saat aplikasi dijalankan ulang, user yang sudah terdaftar bisa langsung login tanpa registrasi ulang.
 
 ---
 
@@ -54,6 +61,8 @@ Cara Kerja Singkat
 - **Data user disimpan di file `users.txt`** dengan format:  
   `username;hash_password`  
   Password tidak disimpan dalam bentuk asli, tapi di-hash agar lebih aman.
+- **Data batch disimpan di file `batches.txt`** dengan format:  
+  `batchId;productName;productionDate;expiryDate;quantity;status`
 
 ---
 
@@ -88,6 +97,9 @@ File Penting
 - users.txt  
   File untuk menyimpan data user yang sudah registrasi (username dan hash password).
 
+- batches.txt  
+  File untuk menyimpan data batch barang yang sudah dicatat.
+
 ---
 
 Kenapa Pakai Graph?
@@ -100,5 +112,7 @@ Kenapa Pakai Graph?
 Catatan
 
 - Data user akan tetap ada walaupun aplikasi ditutup, karena disimpan di file `users.txt`.
+- Data batch juga akan tetap ada walaupun aplikasi ditutup, karena disimpan di file `batches.txt`.
+- Sekarang aplikasi sudah mendukung fitur edit dan hapus batch.
 
 

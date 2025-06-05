@@ -210,4 +210,36 @@ public class InventoryGraph {
             }
         }
     }
+
+    // Mengembalikan semua batch sebagai List
+    public List<BatchVertex> getAllBatches() {
+        List<BatchVertex> result = new ArrayList<>();
+        for (int i = 0; i < numVertices; i++) {
+            result.add(vertices.get(i));
+        }
+        return result;
+    }
+
+    // Menghapus batch berdasarkan ID
+    public boolean removeBatchVertex(String batchId) {
+        int idx = -1;
+        for (int i = 0; i < numVertices; i++) {
+            if (vertices.get(i).getBatchId().equals(batchId)) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx == -1) return false;
+
+        // Geser array vertices dan adjMatrix
+        for (int i = idx; i < numVertices - 1; i++) {
+            vertices.set(i, vertices.get(i + 1));
+            for (int j = 0; j < numVertices; j++) {
+                adjMatrix[i][j] = adjMatrix[i + 1][j];
+                adjMatrix[j][i] = adjMatrix[j][i + 1];
+            }
+        }
+        numVertices--;
+        return true;
+    }
 }
