@@ -116,3 +116,29 @@ Catatan
 - Sekarang aplikasi sudah mendukung fitur edit dan hapus batch.
 
 
+
+Panduan singkat untuk mengakses dan menjalankan proyek dari repository adalah sebagai berikut:
+
+1. Mengunduh Kode Sumber: Pengguna dapat mengunduh seluruh kode sumber proyek dengan melakukan cloning repository menggunakan perintah Git:  
+
+git clone https://github.com/ComradeChandra/KelompokReturnLelah_B_PP1.git
+
+
+Atau, dapat juga mengunduh langsung berkas ZIP dari halaman GitHub repository dengan mengklik tombol "Code" dan memilih "Download ZIP".
+
+
+2. Membuka Proyek: Setelah berhasil diunduh, navigasi ke dalam folder proyek (KelompokReturnLelah_B_PP1). Proyek ini dapat dibuka menggunakan Integrated Development Environment (IDE) seperti VS Code atau IntelliJ IDEA, atau langsung diakses melalui terminal/command prompt.
+
+
+3. Menjalankan Aplikasi: Aplikasi ini dibangun dengan Java. Untuk menjalankan aplikasi, pastikan Java Development Kit (JDK) sudah terinstal. Kompilasi file Java kemudian jalankan kelas Main.java dari terminal:
+
+
+cd KelompokReturnLelah_B_PP1/TubesPP1
+javac *.java
+java Main
+
+Atau, jika menggunakan IDE, jalankan kelas Main secara langsung dari IDE tersebut.
+Dokumentasi ini diharapkan dapat memberikan pemahaman yang jelas mengenai struktur dan fungsionalitas sistem, serta memfasilitasi pihak lain yang ingin meninjau atau mengembangkan lebih lanjut proyek ini.
+
+
+
