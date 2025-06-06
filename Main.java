@@ -28,6 +28,8 @@ public class Main {
 
         // Membaca user dari file users.txt (supaya user tetap ada walau aplikasi ditutup)
         users = loadUsersFromFile("users.txt");
+        saveUsersToFile(users, "users.txt");
+        saveBatchesToFile(inventoryGraph.getAllBatches(), "batches.txt");
 
         // Menu awal: user harus registrasi atau login dulu sebelum bisa pakai aplikasi
         while (true) {
@@ -246,11 +248,15 @@ public class Main {
 
                 case 6:
                     // Tampilkan semua batch yang ada di sistem
+                    // Memanggil fungsi di InventoryGraph untuk menampilkan seluruh batch yang sudah dicatat
+                    // Output berupa daftar batch dengan detail ID, nama produk, tanggal, jumlah, dan status
                     inventoryGraph.displayAllBatches();
                     break;
 
                 case 7:
                     // Lacak alur batch (BFS)
+                    // Meminta user memasukkan ID batch awal, lalu melakukan pencarian dengan algoritma Breadth-First Search
+                    // BFS digunakan untuk menelusuri batch yang terhubung secara berurutan (melebar)
                     System.out.print("   Masukkan ID Batch Awal untuk pelacakan BFS: ");
                     String startBatchBfs = scanner.nextLine();
                     inventoryGraph.bfs(startBatchBfs);
@@ -258,6 +264,8 @@ public class Main {
 
                 case 8:
                     // Lacak alur batch (DFS)
+                    // Meminta user memasukkan ID batch awal, lalu melakukan pencarian dengan algoritma Depth-First Search
+                    // DFS digunakan untuk menelusuri batch yang terhubung secara mendalam (menyelam ke dalam cabang)
                     System.out.print("   Masukkan ID Batch Awal untuk pelacakan DFS: ");
                     String startBatchDfs = scanner.nextLine();
                     inventoryGraph.dfs(startBatchDfs);
@@ -265,10 +273,14 @@ public class Main {
 
                 case 9:
                     // Edit batch
+                    // Meminta user memasukkan ID batch yang ingin diedit
+                    // Jika batch ditemukan, user bisa mengubah nama produk, tanggal produksi, tanggal kadaluarsa, dan kuantitas
+                    // Jika input dikosongkan, data lama tidak diubah
                     System.out.print("Masukkan ID Batch yang ingin diedit: ");
                     String editId = scanner.nextLine();
                     BatchVertex batchToEdit = inventoryGraph.getBatchVertex(editId);
                     if (batchToEdit == null) {
+                        // Jika batch tidak ditemukan, tampilkan pesan error
                         System.out.println("Batch tidak ditemukan.");
                     } else {
                         // Edit data batch (jika input kosong, data tidak diubah)
@@ -288,12 +300,15 @@ public class Main {
                         String newQty = scanner.nextLine();
                         if (!newQty.isEmpty()) batchToEdit.quantity = Integer.parseInt(newQty);
 
+                        // Setelah diedit, tampilkan pesan sukses
                         System.out.println("Batch berhasil diedit.");
                     }
                     break;
 
                 case 10:
                     // Hapus batch
+                    // Meminta user memasukkan ID batch yang ingin dihapus
+                    // Jika batch ditemukan, batch akan dihapus dari sistem (termasuk dari graph)
                     System.out.print("Masukkan ID Batch yang ingin dihapus: ");
                     String delId = scanner.nextLine();
                     boolean removed = inventoryGraph.removeBatchVertex(delId);
@@ -306,12 +321,15 @@ public class Main {
 
                 case 11:
                     // Logout, kembali ke menu login/registrasi
+                    // User akan keluar dari sesi saat ini dan aplikasi kembali ke menu awal
                     System.out.println("Anda telah logout.");
                     main(args); // Restart aplikasi dari awal
                     return;
 
                 case 0:
                     // Keluar aplikasi
+                    // Menampilkan pesan terima kasih, lalu menyimpan data user dan batch ke file
+                    // Ini penting agar data tidak hilang saat aplikasi ditutup
                     System.out.println("Terima kasih telah menggunakan Sistem Pencatatan Barang Kadaluarsa! Sampai jumpa lagi.");
                     // Simpan user ke file sebelum keluar
                     saveUsersToFile(users, "users.txt");
@@ -321,29 +339,44 @@ public class Main {
                     return;
 
                 default:
+                    // Jika user memasukkan pilihan menu yang tidak ada, tampilkan pesan error
                     System.out.println("Pilihan tidak valid. Silakan coba lagi.");
             }
         }
     }
 
     // Membaca user dari file users.txt (supaya user tetap ada walau aplikasi ditutup)
+    // Fungsi ini membaca setiap baris file, memisahkan username dan hash password, lalu membuat objek User
+    // Semua user dimasukkan ke dalam List<User> dan dikembalikan ke pemanggil
     public static List<User> loadUsersFromFile(String filename) {
+        // Membuat list kosong untuk menampung semua user yang dibaca dari file
         List<User> users = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+        try (
+            // Membuka file users.txt untuk dibaca baris per baris
+            BufferedReader br = new BufferedReader(new FileReader(filename))
+        ) {
             String line;
+            // Membaca file baris demi baris sampai habis
             while ((line = br.readLine()) != null) {
+                // Memisahkan setiap baris berdasarkan tanda ';' (format: username;hash_password)
                 String[] parts = line.split(";");
+                // Jika format baris benar (ada 2 bagian: username dan hash password)
                 if (parts.length == 2) {
-                    users.add(new User(parts[0], parts[1], true)); // true artinya password sudah hash
+                    // Membuat objek User baru dari username dan hash password
+                    // Parameter 'true' artinya password sudah dalam bentuk hash, bukan password asli
+                    users.add(new User(parts[0], parts[1], true));
                 }
             }
         } catch (IOException e) {
-            // File belum ada, tidak masalah
+            // Jika file belum ada, tidak masalah (anggap saja belum ada user yang terdaftar)
         }
+        // Mengembalikan list user yang sudah dibaca dari file ke pemanggil fungsi
         return users;
     }
 
     // Menyimpan user ke file users.txt
+    // Fungsi ini menulis setiap user ke file dalam format: username;hash_password
+    // Tujuannya agar data user tetap ada walau aplikasi ditutup
     public static void saveUsersToFile(List<User> users, String filename) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
             for (User u : users) {
@@ -356,6 +389,7 @@ public class Main {
     }
 
     // Simpan semua batch ke file (agar data batch tetap ada walau aplikasi ditutup)
+    // Fungsi ini menulis setiap batch ke file dalam format: batchId;productName;productionDate;expiryDate;quantity;status
     public static void saveBatchesToFile(List<BatchVertex> batches, String filename) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
             for (BatchVertex b : batches) {
@@ -373,6 +407,8 @@ public class Main {
     }
 
     // Load semua batch dari file (untuk fitur lanjutan, misal auto-load batch)
+    // Fungsi ini membaca setiap baris file, memisahkan data batch, lalu membuat objek BatchVertex
+    // Semua batch dimasukkan ke dalam List<BatchVertex> dan dikembalikan ke pemanggil
     public static List<BatchVertex> loadBatchesFromFile(String filename) {
         List<BatchVertex> batches = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -381,18 +417,18 @@ public class Main {
                 String[] parts = line.split(";");
                 if (parts.length >= 6) {
                     BatchVertex b = new BatchVertex(
-                        parts[0],
-                        parts[1],
-                        DateUtil.parseDate(parts[2]),
-                        DateUtil.parseDate(parts[3]),
-                        Integer.parseInt(parts[4])
+                        parts[0], // batchId
+                        parts[1], // productName
+                        DateUtil.parseDate(parts[2]), // productionDate
+                        DateUtil.parseDate(parts[3]), // expiryDate
+                        Integer.parseInt(parts[4]) // quantity
                     );
-                    b.updateStatus(parts[5]);
+                    b.updateStatus(parts[5]); // status batch
                     batches.add(b);
                 }
             }
         } catch (IOException e) {
-            // File belum ada, tidak masalah
+            // Jika file belum ada, tidak masalah (anggap belum ada batch)
         }
         return batches;
     }
