@@ -1,5 +1,6 @@
 package TubesPP1;
 
+// Import kelas-kelas yang dibutuhkan
 import TubesPP1.BatchVertex;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -231,7 +232,7 @@ public class InventoryGraph {
         }
         if (idx == -1) return false;
 
-        // Geser array vertices dan adjMatrix
+        // Geser array vertices dan adjMatrix agar tidak ada celah setelah dihapus
         for (int i = idx; i < numVertices - 1; i++) {
             vertices.set(i, vertices.get(i + 1));
             for (int j = 0; j < numVertices; j++) {

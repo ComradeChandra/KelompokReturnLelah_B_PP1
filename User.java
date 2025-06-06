@@ -32,11 +32,11 @@ public class User {
     // Fungsi ini mengubah password asli menjadi kode acak (hash) yang tidak bisa dikembalikan ke bentuk aslinya
     public static String hashPassword(String password) {
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(password.getBytes());
+            MessageDigest md = MessageDigest.getInstance("SHA-256"); // Membuat objek untuk hashing SHA-256
+            byte[] hash = md.digest(password.getBytes()); // Hash password jadi array byte
             StringBuilder sb = new StringBuilder();
             for (byte b : hash) {
-                sb.append(String.format("%02x", b));
+                sb.append(String.format("%02x", b)); // Ubah setiap byte ke string heksadesimal
             }
             return sb.toString(); // hasil hash dalam bentuk string heksadesimal
         } catch (NoSuchAlgorithmException e) {

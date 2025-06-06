@@ -1,5 +1,6 @@
 package TubesPP1;
 
+// Import semua kelas yang dibutuhkan
 import TubesPP1.BatchVertex;
 import TubesPP1.InventoryGraph;
 import TubesPP1.DateUtil;
@@ -11,12 +12,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.io.*;
 
+// Kelas utama aplikasi
 public class Main {
     public static void main(String[] args) {
         // Membuat scanner untuk membaca input dari keyboard
         Scanner scanner = new Scanner(System.in);
 
-        // Membuat objek InventoryGraph untuk menyimpan semua batch barang
+        // Membuat objek InventoryGraph untuk menyimpan semua batch barang (graph)
         InventoryGraph inventoryGraph = new InventoryGraph(20); // Maksimal 20 batch
 
         // List untuk menyimpan semua user yang sudah terdaftar
@@ -24,7 +26,7 @@ public class Main {
         // Variabel untuk menyimpan user yang sedang login
         User currentUser = null;
 
-        // Membaca user dari file users.txt
+        // Membaca user dari file users.txt (supaya user tetap ada walau aplikasi ditutup)
         users = loadUsersFromFile("users.txt");
 
         // Menu awal: user harus registrasi atau login dulu sebelum bisa pakai aplikasi
@@ -54,8 +56,9 @@ public class Main {
                 if (exists) {
                     System.out.println("Username sudah terdaftar. Silakan pilih username lain.");
                 } else {
+                    // Tambah user baru ke list dan langsung simpan ke file
                     users.add(new User(username, password));
-                    saveUsersToFile(users, "users.txt"); //  baris ini berfungsi agar user langsung disimpan ke file
+                    saveUsersToFile(users, "users.txt"); // Simpan user ke file
                     System.out.println("Registrasi berhasil! Silakan login.");
                 }
             } else if (menu.equals("2")) {
@@ -65,6 +68,7 @@ public class Main {
                 System.out.print("Password: ");
                 String password = scanner.nextLine();
 
+                // Cek apakah username dan password cocok
                 boolean found = false;
                 for (User u : users) {
                     if (u.getUsername().equals(username) && u.checkPassword(password)) {
@@ -111,7 +115,7 @@ public class Main {
 
             int choice = -1;
             try {
-                choice = scanner.nextInt();
+                choice = scanner.nextInt(); // Baca input menu (angka)
             } catch (InputMismatchException e) {
                 System.out.println("Input tidak valid. Mohon masukkan angka.");
                 scanner.nextLine(); // Buang input yang salah
@@ -267,6 +271,7 @@ public class Main {
                     if (batchToEdit == null) {
                         System.out.println("Batch tidak ditemukan.");
                     } else {
+                        // Edit data batch (jika input kosong, data tidak diubah)
                         System.out.print("Nama Produk baru (kosongkan jika tidak diubah): ");
                         String newName = scanner.nextLine();
                         if (!newName.isEmpty()) batchToEdit.productName = newName;
@@ -321,7 +326,7 @@ public class Main {
         }
     }
 
-    // Membaca user dari file users.txt
+    // Membaca user dari file users.txt (supaya user tetap ada walau aplikasi ditutup)
     public static List<User> loadUsersFromFile(String filename) {
         List<User> users = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -350,7 +355,7 @@ public class Main {
         }
     }
 
-    // Simpan semua batch ke file
+    // Simpan semua batch ke file (agar data batch tetap ada walau aplikasi ditutup)
     public static void saveBatchesToFile(List<BatchVertex> batches, String filename) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
             for (BatchVertex b : batches) {
@@ -367,7 +372,7 @@ public class Main {
         }
     }
 
-    // Load semua batch dari file
+    // Load semua batch dari file (untuk fitur lanjutan, misal auto-load batch)
     public static List<BatchVertex> loadBatchesFromFile(String filename) {
         List<BatchVertex> batches = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
