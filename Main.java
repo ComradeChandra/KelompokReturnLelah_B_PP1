@@ -1,37 +1,34 @@
 package TubesPP1;
 
-import TubesPP1.BatchVertex;
-import TubesPP1.InventoryGraph;
-import TubesPP1.DateUtil;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-import java.io.*;
-import java.util.List; // Pastikan baris ini ada
+// Import semua kelas yang dibutuhkan untuk aplikasi
+import TubesPP1.BatchVertex;      // Kelas untuk objek batch barang
+import TubesPP1.InventoryGraph;   // Kelas untuk struktur graph batch
+import TubesPP1.DateUtil;         // Kelas utilitas untuk tanggal
+import java.time.LocalDate;       // Untuk tipe data tanggal
+import java.time.format.DateTimeParseException; // Untuk menangani error parsing tanggal
+import java.util.InputMismatchException;        // Untuk menangani error input angka
+import java.util.Scanner;         // Untuk membaca input dari user di terminal
+import java.io.*;                 // Untuk operasi file (baca/tulis)
+import java.util.List;            // Untuk List<BatchVertex> pada batch
 
 public class Main {
     public static void main(String[] args) {
-        // Membuat scanner untuk membaca input dari keyboard
+        // Membuat scanner untuk membaca input dari keyboard (user)
         Scanner scanner = new Scanner(System.in);
 
-        // Membuat objek InventoryGraph untuk menyimpan semua batch barang (graph)
+        // Membuat objek InventoryGraph untuk menyimpan semua batch barang dalam bentuk graph
+        // Graph ini akan menyimpan batch sebagai simpul (vertex) dan relasi antar batch sebagai edge
         InventoryGraph inventoryGraph = new InventoryGraph(20); // Maksimal 20 batch
 
-        // ===========================
-        // ARRAY BIASA UNTUK USER
-        // ===========================
         // Membuat array untuk menyimpan data user, kapasitas maksimal 100 user
         User[] users = new User[100];
         // Variabel untuk menghitung jumlah user yang sudah terisi di array
         int userCount = 0;
-        // Variabel untuk menyimpan user yang sedang login
+        // Variabel untuk menyimpan user yang sedang login (null jika belum login)
         User currentUser = null;
 
-        // ===========================
-        // FUNGSI UNTUK ARRAY BIASA
-        // ===========================
         // Membaca user dari file users.txt (supaya user tetap ada walau aplikasi ditutup)
+        // Fungsi ini akan mengisi array users dan mengembalikan jumlah user yang berhasil dibaca
         userCount = loadUsersFromFileArray("users.txt", users);
 
         // Menu awal: user harus registrasi atau login dulu sebelum bisa pakai aplikasi
@@ -66,9 +63,6 @@ public class Main {
                     if (userCount < users.length) {
                         users[userCount] = new User(username, password); // Simpan user baru di array
                         userCount++; // Tambah jumlah user
-                        // ===========================
-                        // FUNGSI UNTUK ARRAY BIASA
-                        // ===========================
                         saveUsersToFileArray(users, userCount, "users.txt"); // Simpan semua user ke file
                         System.out.println("Registrasi berhasil! Silakan login.");
                     } else {
@@ -131,8 +125,9 @@ public class Main {
             try {
                 choice = scanner.nextInt(); // Baca input menu (angka)
             } catch (InputMismatchException e) {
+                // Jika user memasukkan input yang bukan angka, tangkap error-nya
                 System.out.println("Input tidak valid. Mohon masukkan angka.");
-                scanner.nextLine(); // Buang input yang salah
+                scanner.nextLine(); // Buang input yang salah agar tidak infinite loop
                 continue;
             }
             scanner.nextLine(); // Buang newline setelah angka
@@ -154,6 +149,7 @@ public class Main {
                         try {
                             productionDate = DateUtil.parseDate(prodDateStr);
                         } catch (DateTimeParseException e) {
+                            // Jika format tanggal salah, tampilkan pesan error
                             System.out.println("Format tanggal salah. Gunakan YYYY-MM-DD.");
                         }
                     }
@@ -187,6 +183,7 @@ public class Main {
                                 validQuantity = true;
                             }
                         } catch (InputMismatchException e) {
+                            // Jika input bukan angka, tampilkan pesan error
                             System.out.println("Kuantitas harus berupa angka.");
                             scanner.nextLine(); // Buang input salah
                         }
@@ -267,6 +264,7 @@ public class Main {
                     // Lacak alur batch (BFS)
                     System.out.print("   Masukkan ID Batch Awal untuk pelacakan BFS: ");
                     String startBatchBfs = scanner.nextLine();
+                    // Akan menampilkan urutan batch yang terhubung dari batch awal (BFS)
                     inventoryGraph.bfs(startBatchBfs);
                     break;
 
@@ -274,6 +272,7 @@ public class Main {
                     // Lacak alur batch (DFS)
                     System.out.print("   Masukkan ID Batch Awal untuk pelacakan DFS: ");
                     String startBatchDfs = scanner.nextLine();
+                    // Akan menampilkan urutan batch yang terhubung dari batch awal (DFS)
                     inventoryGraph.dfs(startBatchDfs);
                     break;
 
@@ -326,12 +325,8 @@ public class Main {
                 case 0:
                     // Keluar aplikasi
                     System.out.println("Terima kasih telah menggunakan Sistem Pencatatan Barang Kadaluarsa! Sampai jumpa lagi.");
-                    // ===========================
-                    // FUNGSI UNTUK ARRAY BIASA
-                    // ===========================
-                    saveUsersToFileArray(users, userCount, "users.txt");
-                    // Untuk batch, pastikan InventoryGraph juga sudah tidak pakai List di penyimpanan file
-                    inventoryGraph.saveAllBatchesToFile("batches.txt");
+                    saveUsersToFileArray(users, userCount, "users.txt"); // Simpan user ke file
+                    inventoryGraph.saveAllBatchesToFile("batches.txt"); // Simpan batch ke file
                     scanner.close();
                     return;
 
@@ -341,9 +336,6 @@ public class Main {
         }
     }
 
-    // ===========================
-    // FUNGSI UNTUK ARRAY BIASA
-    // ===========================
     // Fungsi untuk membaca user dari file ke array
     // Mengembalikan jumlah user yang berhasil dibaca
     public static int loadUsersFromFileArray(String filename, User[] users) {
@@ -358,14 +350,15 @@ public class Main {
                 }
             }
         } catch (IOException e) {
-            // Jika file belum ada, tidak masalah
+            // Penjelasan lengkap:
+            // IOException adalah exception (kesalahan) yang terjadi saat proses input/output file.
+            // Contohnya: file tidak ditemukan, file tidak bisa dibaca, atau ada masalah saat membaca file.
+            // Pada kasus ini, jika file users.txt belum ada, program tidak error, hanya melewati blok ini.
+            // Ini penting agar aplikasi tetap berjalan walaupun file user belum pernah dibuat sebelumnya.
         }
         return count;
     }
 
-    // ===========================
-    // FUNGSI UNTUK ARRAY BIASA
-    // ===========================
     // Fungsi untuk menyimpan semua user dari array ke file
     public static void saveUsersToFileArray(User[] users, int userCount, String filename) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
@@ -374,6 +367,10 @@ public class Main {
                 bw.newLine();
             }
         } catch (IOException e) {
+            // Penjelasan lengkap:
+            // IOException di sini akan terjadi jika ada masalah saat menulis ke file,
+            // misalnya: tidak ada izin menulis, disk penuh, atau file sedang dipakai aplikasi lain.
+            // Jika terjadi, program akan menampilkan pesan error ke user.
             System.out.println("Gagal menyimpan data user ke file.");
         }
     }

@@ -1,17 +1,17 @@
 package TubesPP1;
 
 // Import kelas-kelas yang dibutuhkan
-import TubesPP1.BatchVertex;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import TubesPP1.BatchVertex; // Kelas untuk objek batch barang
+import java.util.ArrayList;  // Untuk menyimpan daftar batch (vertex)
+import java.util.HashMap;    // Untuk mapping batchId ke index
+import java.util.LinkedList; // Untuk antrian BFS
+import java.util.List;       // Untuk List<BatchVertex>
+import java.util.Map;        // Untuk Map batchId ke index
+import java.util.Queue;      // Untuk antrian BFS
+import java.io.BufferedWriter; // Untuk menulis ke file
+import java.io.FileWriter;     // Untuk menulis ke file
 
-// Kelas InventoryGraph menyimpan seluruh batch barang dalam bentuk graph (matriks)
+// Kelas InventoryGraph menyimpan seluruh batch barang dalam bentuk graph (matriks adjacency)
 // Setiap batch adalah simpul (vertex), dan hubungan antar batch adalah edge
 public class InventoryGraph {
 
@@ -29,13 +29,14 @@ public class InventoryGraph {
     // Konstruktor: inisialisasi graph dengan kapasitas tertentu
     public InventoryGraph(int maxVertices) {
         this.maxVertices = maxVertices;
-        vertices = new ArrayList<>(maxVertices);
-        adjMatrix = new int[maxVertices][maxVertices];
+        vertices = new ArrayList<>(maxVertices); // List untuk menyimpan batch
+        adjMatrix = new int[maxVertices][maxVertices]; // Matriks adjacency
         numVertices = 0;
-        vertexIndices = new HashMap<>();
+        vertexIndices = new HashMap<>(); // Map batchId ke index
     }
 
     // Menambah batch baru ke graph
+    // Setiap batch baru akan menjadi vertex baru di graph
     public void addBatchVertex(BatchVertex vertex) {
         if (numVertices >= maxVertices) {
             System.out.println("Graph sudah penuh, tidak bisa menambah batch baru.");
@@ -52,6 +53,7 @@ public class InventoryGraph {
     }
 
     // Menambah hubungan (edge) antar batch
+    // Edge berarti ada proses/relasi dari batch asal ke batch tujuan
     public void addBatchEdge(String batchId1, String batchId2) {
         Integer index1 = vertexIndices.get(batchId1);
         Integer index2 = vertexIndices.get(batchId2);
@@ -69,6 +71,7 @@ public class InventoryGraph {
     }
 
     // Menampilkan matriks adjacency (relasi antar batch)
+    // Matriks ini menunjukkan batch mana saja yang saling terhubung
     public void displayAdjacencyMatrix() {
         if (numVertices == 0) {
             System.out.println("\n--- Adjacency Matrix (Kosong) ---");
@@ -100,6 +103,7 @@ public class InventoryGraph {
     }
 
     // Mengambil objek batch berdasarkan batchId
+    // Digunakan untuk edit/hapus/cari batch tertentu
     public BatchVertex getBatchVertex(String batchId) {
         Integer index = vertexIndices.get(batchId);
         if (index != null) {
@@ -109,6 +113,7 @@ public class InventoryGraph {
     }
 
     // Mencari batch yang akan kadaluarsa dalam x hari ke depan
+    // Mengembalikan list batch yang expiring
     public List<BatchVertex> findExpiringBatches(int daysThreshold) {
         List<BatchVertex> expiring = new ArrayList<>();
         System.out.println("\nMencari batch yang akan kadaluarsa dalam " + daysThreshold + " hari...");
@@ -122,6 +127,7 @@ public class InventoryGraph {
     }
 
     // Mencari batch yang sudah kadaluarsa
+    // Mengembalikan list batch yang expired
     public List<BatchVertex> findExpiredBatches() {
         List<BatchVertex> expired = new ArrayList<>();
         System.out.println("\nMencari batch yang sudah kadaluarsa...");
@@ -147,6 +153,7 @@ public class InventoryGraph {
     }
 
     // Breadth-First Search (BFS): menelusuri batch dari satu batch ke batch lain secara berurutan
+    // Cocok untuk menampilkan alur batch secara melebar
     public List<BatchVertex> bfs(String startBatchId) {
         // Reset status kunjungan semua batch
         for (BatchVertex v : vertices) {
@@ -183,6 +190,7 @@ public class InventoryGraph {
     }
 
     // Depth-First Search (DFS): menelusuri batch secara rekursif (menyelam ke dalam)
+    // Cocok untuk menampilkan alur batch secara mendalam
     public List<BatchVertex> dfs(String startBatchId) {
         // Reset status kunjungan semua batch
         for (BatchVertex v : vertices) {
@@ -215,6 +223,7 @@ public class InventoryGraph {
     }
 
     // Mengembalikan semua batch sebagai List
+    // Digunakan untuk menyimpan ke file
     public List<BatchVertex> getAllBatches() {
         List<BatchVertex> result = new ArrayList<>();
         for (int i = 0; i < numVertices; i++) {
@@ -224,6 +233,7 @@ public class InventoryGraph {
     }
 
     // Menghapus batch berdasarkan ID
+    // Menghapus vertex dan menggeser data di list dan matriks agar tetap rapat
     public boolean removeBatchVertex(String batchId) {
         int idx = -1;
         for (int i = 0; i < numVertices; i++) {
@@ -247,6 +257,7 @@ public class InventoryGraph {
     }
 
     // Fungsi untuk menyimpan semua batch ke file batches.txt
+    // Setiap batch akan disimpan dalam satu baris dengan format: id;nama;produksi;expired;qty;status
     public void saveAllBatchesToFile(String filename) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
             for (BatchVertex b : vertices) {
@@ -259,6 +270,7 @@ public class InventoryGraph {
                 bw.newLine();
             }
         } catch (Exception e) {
+            // Exception bisa terjadi jika file tidak bisa ditulis (misal: tidak ada izin, disk penuh, dsb)
             System.out.println("Gagal menyimpan data batch ke file.");
         }
     }
