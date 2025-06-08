@@ -16,6 +16,11 @@ import java.io.FileWriter;     // Untuk menulis ke file
 public class InventoryGraph {
 
     // List untuk menyimpan semua batch (vertex)
+    // Menggunakan List (ArrayList) untuk menyimpan daftar batch barang (vertex).
+    // Alasan: ArrayList memudahkan penambahan, penghapusan, dan akses batch secara dinamis tanpa perlu mengatur ukuran array manual.
+    // Cara kerja: vertices.add(batch) otomatis menambah batch ke list, tidak perlu geser array sendiri.
+    // Alternatif: Jika pakai array biasa, harus deklarasi BatchVertex[] vertices = new BatchVertex[maxVertices] dan kelola indeks/geser data manual.
+    // Kekurangan array: Jika ingin hapus/tambah di tengah, harus geser elemen satu per satu, lebih rawan error dan lebih rumit.
     private List<BatchVertex> vertices;
     // Matriks adjacency untuk menyimpan relasi antar batch (edge)
     private int[][] adjMatrix;
@@ -24,6 +29,11 @@ public class InventoryGraph {
     // Maksimal batch yang bisa dimasukkan
     private int maxVertices;
     // Map untuk mencari index batch berdasarkan batchId
+    // Menggunakan Map (HashMap) untuk mapping batchId ke index batch di ArrayList.
+    // Alasan: HashMap memungkinkan pencarian index batch berdasarkan ID dengan sangat cepat (O(1)), tanpa perlu loop manual.
+    // Cara kerja: vertexIndices.get(batchId) langsung dapat index batch di list.
+    // Alternatif: Jika pakai array, harus cari index batchId dengan loop for (O(n)), lebih lambat jika data banyak.
+    // Kekurangan array: Pencarian batchId lebih lambat dan kode lebih panjang.
     private Map<String, Integer> vertexIndices;
 
     // Konstruktor: inisialisasi graph dengan kapasitas tertentu
@@ -161,6 +171,11 @@ public class InventoryGraph {
         }
 
         List<BatchVertex> traversalResult = new ArrayList<>();
+        // Pada BFS, menggunakan Queue (LinkedList) untuk antrian batch yang akan dikunjungi.
+        // Alasan: Queue memudahkan implementasi algoritma BFS sesuai konsep antrian (FIFO), dan LinkedList sudah mendukung operasi queue secara efisien.
+        // Cara kerja: queue.add() untuk enqueue, queue.poll() untuk dequeue.
+        // Alternatif: Jika pakai array, harus kelola dua indeks (head/tail) dan geser data jika penuh, lebih ribet dan rawan bug.
+        // Kekurangan array: Implementasi queue manual lebih panjang dan mudah salah.
         Queue<BatchVertex> queue = new LinkedList<>();
 
         BatchVertex startVertex = getBatchVertex(startBatchId);
