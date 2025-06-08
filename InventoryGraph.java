@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 // Kelas InventoryGraph menyimpan seluruh batch barang dalam bentuk graph (matriks)
 // Setiap batch adalah simpul (vertex), dan hubungan antar batch adalah edge
@@ -242,5 +244,22 @@ public class InventoryGraph {
         }
         numVertices--;
         return true;
+    }
+
+    // Fungsi untuk menyimpan semua batch ke file batches.txt
+    public void saveAllBatchesToFile(String filename) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+            for (BatchVertex b : vertices) {
+                bw.write(b.getBatchId() + ";" +
+                         b.getProductName() + ";" +
+                         DateUtil.formatDate(b.getProductionDate()) + ";" +
+                         DateUtil.formatDate(b.getExpiryDate()) + ";" +
+                         b.getQuantity() + ";" +
+                         b.getStatus());
+                bw.newLine();
+            }
+        } catch (Exception e) {
+            System.out.println("Gagal menyimpan data batch ke file.");
+        }
     }
 }
